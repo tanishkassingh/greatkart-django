@@ -14,7 +14,7 @@
 <div class="card">
   <div class="card-body">
     <h4 class="card-title mb-4">Billing Address</h4>
-    <form action="{%url 'place_order'}" method="POST">
+    <form action="{% url 'place_order' %}" method="POST">
       {% csrf_token %}
       <div class="form-row">
         <div class="col form-group">
@@ -65,7 +65,6 @@
           <textarea name="order_note" rows="2" class="form-control"></textarea>
         </div>
 
-    </form>
 
   </div>
 </div> <!-- card.// -->
@@ -105,7 +104,7 @@
       	</td>
       	<td>
       		<!-- col.// -->
-      				<label for="">{{ cart_item.quantity }}</label>
+      				<label for="">{{cart_item.quantity}}</label>
       	</td>
       	<td>
       		<div class="price-wrap">
@@ -125,6 +124,7 @@
       </form>
 		</div> <!-- card-body.// -->
 		</div> <!-- card.// -->
+
 
 </aside> <!-- col.// -->
 

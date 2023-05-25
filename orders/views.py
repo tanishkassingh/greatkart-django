@@ -1,12 +1,75 @@
 from django.shortcuts import render,redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from carts.models import CartItem
 from .forms import OrderForm
 import datetime
-from .models import Order
+from .models import Order,Payment,OrderProduct
+import json
+from store.models import Product
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 
 def payments(request):
-    return render(request, 'orders/payments.html')
+    body=json.loads(request.body)
+    order=Order.objects.get(user=request.user,is_ordered=False,order_number=body['orderID'])
+
+    payment=Payment(
+        user=request.request.user,
+        payment_id=body['tansID'],
+        payment_method=body['payment_method'],
+        amount_paid=order.order_total,
+        status=body['status'],
+    )
+    payment.save()
+
+    order.payment=payment
+    order.is_ordered=True
+    order.save()
+
+    for item in cart_items:
+        orderproduct = OrderProduct()
+        orderproduct.order_id = order.id
+        orderproduct.payment = payment
+        orderproduct.user_id = request.user.id
+        orderproduct.product_id = item.product_id
+        orderproduct.quantity = item.quantity
+        orderproduct.ordered = True
+        orderproduct.save()
+
+        cart_item = CartItem.objects.get(id=item.id)
+        product_variation = cart_item.variation.all()
+        orderproduct = OrderProduct.objects.get(id=orderproduct.id)
+        orderproduct.variation.set(product_variation)
+        orderproduct.save()
+
+
+
+        #Replace the quantity of the sold products
+        product = Product.objects.get(id=item.product_id)
+        product.stock = item.quantity
+        product.save()
+
+        #clear kart
+    CartItem.objects.filter(user=request.user).delete()
+
+    mail_subject='thank you for your order!'
+    message=render_to_string('orders/order_received_email.html',{
+                'user':request.user,
+                'order':order,
+            })
+    to_email=request.user.email
+    send_email=EmailMessage(mail_subject,message,to=[to_email])
+    send_email.send()
+
+    data={
+        'order_number':order.order_number,
+        'transID':payment.payment_id,
+
+    }
+    return JsonResponse(data)
+
+
+
 # Create your views here.
 def place_order(request,total=0, quantity=0,):
     current_user=request.user
@@ -48,7 +111,7 @@ def place_order(request,total=0, quantity=0,):
             dt=int(datetime.date.today().strftime('%d'))
             mt=int(datetime.date.today().strftime('%m'))
             d=datetime.date(yr,mt,dt)
-            current_date=d.strftime("%y%m%d")
+            current_date=d.strftime("%Y%m%d")
             order_number=current_date + str(data.id)
             data.order_number =order_number
             data.save()
@@ -65,3 +128,7 @@ def place_order(request,total=0, quantity=0,):
             return render(request,'orders/payments.html',context)
     else:
         return redirect('checkout')
+    
+def order_complete(request):
+    return render(request, 'orders/order_complete.html')
+    
