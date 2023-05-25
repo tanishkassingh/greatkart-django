@@ -117,7 +117,7 @@ def login(request):
                 query=requests.utils.urlparse(url).query
                 
                 # next=/cart/checkout/
-                params=dict(x.split('=')for x in query.split('&'))
+                params=dict(x.split('=') for x in query.split('&'))
                 if 'next' in params:
                     nextPage=params['next']
                     return redirect(nextPage)
@@ -149,7 +149,7 @@ def activate(request, uidb64, token):
         user.is_active=True
         user.save()
         messages.success(request, 'Congratulations! Your Account is Activated.')
-        return redirect('login')
+        return redirect('login') 
     else:
         messages.error(request, 'Invalid Activation link')
         return redirect('register')
