@@ -3,12 +3,12 @@
 		<div class="container">
 			<section class="footer-bottom border-top row">
 				<div class="col-md-2">
-					<p class="text-muted"> &copy 2019 Company name </p>
+					<p class="text-muted"> &django project 2023 Tanishka Singh</p>
 				</div>
 				<div class="col-md-8 text-md-center">
-					<span class="px-2">info@pixsellz.io</span>
-					<span class="px-2">+879-332-9375</span>
-					<span class="px-2">Street name 123, Avanue abc</span>
+					<span class="px-2">tanishkasingh8xx8@gmail.com</span>
+					<span class="px-2">+91620xx32305</span>
+					<span class="px-2">Sample Address</span>
 				</div>
 				<div class="col-md-2 text-md-right text-muted">
 					<i class="fab fa-lg fa-cc-visa"></i>
@@ -19,3 +19,14 @@
 		</div><!-- //container -->
 	</footer>
 	<!-- ========================= FOOTER END // ========================= -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			$('.thumb a').click(function(e){
+				e.preventDefault();
+				$('.mainImage img').attr('src',$(this).attr("href"));
+			})
+		})
+	</script>
+	</body>
+	</html>
